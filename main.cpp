@@ -67,14 +67,18 @@ void get_Pheader(ElfView& elf){
                 flags[0] = 'R';
                 flags[1] = 'W';
                 flags[2] = 'X';
+                break;
             case 0x6:
                 flags[0] = 'R';
                 flags[1] = 'W';
+                break;
             case 0x5:
                 flags[0] = 'R';
                 flags[2] = 'X';
+                break;
             case 0x4:
                 flags[0] = 'R';
+                break;
         }
         switch(ph->p_type){
             case 0x0:
@@ -104,13 +108,13 @@ void get_Pheader(ElfView& elf){
             case 0x7fffffff:
                 p_type = "HIPROC";
                 break;
-            case 0x6474e550:
-                p_type = "PT_GNU_EH_FRAME";
+            case PT_GNU_EH_FRAME: //0x6474e550
+                p_type = "PT_GNU_EH_FRAME"; 
                 break;
-            case 0x6474e551:
+            case PT_GNU_STACK: //0x6474e551
                 p_type = "PT_GNU_STACK";
                 break;
-            case 0x6474e552:
+            case PT_GNU_RELRO: //0x6474e552
                 p_type = "PT_GNU_RELRO";
                 break;
             default:
