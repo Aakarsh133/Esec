@@ -11,7 +11,7 @@ bool has_nx(const ElfView& elf){
 
     /*Selfnote - Cast everything to unsigned char*
     before doing pointer arthimatic */
-    
+
     Elf32_Phdr *ph;
 
     for(int i = 0; i<elf.ehdr->e_phnum; ++i){
@@ -23,4 +23,8 @@ bool has_nx(const ElfView& elf){
     return true; /*For modern machines NX is enabled but for very old machines 90ish stack is disabled
     if no PT_GNU_STACK is present */
 
+}
+
+bool is_pie(const ElfView& elf){
+    return (elf.ehdr->e_type == ET_DYN);
 }
