@@ -1,12 +1,7 @@
 #include <iostream>
 #include <cstdio>
-#include <cstdlib>
 #include <elf.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+
 
 #include "elf_gethdr.h"
 
@@ -18,8 +13,6 @@ void get_Pheader(ElfView& elf){
     Elf32_Half e_phentsize;
     Elf32_Phdr *entry_head, *ph;
     
-    char flags[3] = {'-','-','-'};
-
     e_phoff = elf.ehdr->e_phoff;
     e_phnum = elf.ehdr->e_phnum;
     e_phentsize = elf.ehdr->e_phentsize;
@@ -29,6 +22,9 @@ void get_Pheader(ElfView& elf){
     for(int i = 0; i<e_phnum; ++i){
         ph = &entry_head[i];
         std::string p_type;
+
+        char flags[3] = {'-','-','-'};
+
         switch(ph->p_flags){
             case 0x7:
                 flags[0] = 'R';
@@ -83,6 +79,9 @@ void get_Pheader(ElfView& elf){
                 break;
             case PT_GNU_RELRO: //0x6474e552
                 p_type = "PT_GNU_RELRO";
+                break;
+            case PT_GNU_PROPERTY: //0x6474e553
+                p_type = "PT_GNU_PROPERTY"; 
                 break;
             default:
                 p_type = "OS_SPECIFIC";

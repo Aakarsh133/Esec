@@ -1,0 +1,26 @@
+#include <iostream>
+#include <elf.h>
+
+#include "elf_check.h"
+
+bool has_nx(const ElfView& elf){
+
+    off_t e_phoff = elf.ehdr->e_phoff;
+
+    unsigned char *base = ((unsigned char*)elf.addr + e_phoff); 
+
+    /*Selfnote - Cast everything to unsigned char*
+    before doing pointer arthimatic */
+    
+    Elf32_Phdr *ph;
+
+    for(int i = 0; i<elf.ehdr->e_phnum; ++i){
+        ph = (Elf32_Phdr*)(base + i * elf.ehdr->e_phentsize);
+        if ((ph->p_type==PT_GNU_STACK)){
+            return !(ph->p_flags & PF_X);
+        }
+    }
+    return true; /*For modern machines NX is enabled but for very old machines 90ish stack is disabled
+    if no PT_GNU_STACK is present */
+
+}

@@ -1,19 +1,13 @@
 #include <iostream>
-#include <cstdio>
-#include <cstdlib>
 #include <elf.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 
 #include "include/elf_view.h"
 #include "include/elf_load.h"
 #include "include/elf_gethdr.h"
+#include "include/elf_check.h"
+
 // namespace std
-
-
 
 int main(int argc, char *argv[]){
 
@@ -33,7 +27,9 @@ int main(int argc, char *argv[]){
     }
     else exit(EXIT_FAILURE);
 
-    get_Pheader(elf);
+    //get_Pheader(elf);
+    std::cout << has_nx(elf) << std::endl;
+    
     exit(EXIT_SUCCESS);
 
 }
