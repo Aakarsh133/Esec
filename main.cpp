@@ -29,7 +29,8 @@ int main(int argc, char *argv[]){
 
     //get_Pheader(elf);
     //std::cout << has_nx(elf) << std::endl;
-    std::cout << is_pie(elf) << std::endl;
+    //std::cout << is_pie(elf) << std::endl;
+    std::cout << has_relro(elf) << std::endl;
     exit(EXIT_SUCCESS);
 
 }
