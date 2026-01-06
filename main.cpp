@@ -30,7 +30,14 @@ int main(int argc, char *argv[]){
     //get_Pheader(elf);
     //std::cout << has_nx(elf) << std::endl;
     //std::cout << is_pie(elf) << std::endl;
-    std::cout << has_relro(elf) << std::endl;
+    //std::cout << has_relro(elf) << std::endl;
+    has_nx(elf);
+    is_pie(elf);
+    has_relro(elf);
+    std::cout<<elf.res.NX<<std::endl;
+    std::cout<<elf.res.PIE<<std::endl;
+    std::cout<<elf.res.RELRO<<std::endl;
+
     exit(EXIT_SUCCESS);
 
 }
