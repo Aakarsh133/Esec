@@ -56,7 +56,7 @@ bool has_relro(ElfView& elf){
         ph = (Elf32_Phdr*)(base + i * elf.ehdr->e_phentsize);
         if (ph->p_type==PT_GNU_RELRO){
             elf.res.RELRO = "PARTIAL";
-            if ((dyn != NULL)&&(dyn->d_tag != DT_BIND_NOW)){
+            if ((dyn != NULL)&&(dyn->d_tag != DT_BIND_NOW)){ //FIX
                 elf.res.RELRO = "FULL";
             }
         }
