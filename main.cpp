@@ -7,7 +7,8 @@
 #include "include/elf_gethdr.h"
 #include "include/elf_check.h"
 
-// namespace std
+/* namespace std 
+    Avoiding std to avoid any future namespacing issues */
 
 void init(ElfView& elf){
     has_nx(elf);
