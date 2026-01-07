@@ -3,6 +3,8 @@
 
 #include "elf_check.h"
 
+
+
 bool has_nx(ElfView& elf){
 
     unsigned char *base = ((unsigned char*)elf.addr + elf.ehdr->e_phoff); 
@@ -39,7 +41,7 @@ bool is_pie(ElfView& elf){
 }
 
 bool has_relro(ElfView& elf){
-    unsigned char *base = ((unsigned char*)elf.addr + elf.ehdr->e_phoff);
+    unsigned char *base = ((unsigned char*)elf.addr + elf.ehdr->e_phoff), *dyn_base;
     Elf32_Phdr *ph;
     Elf32_Dyn *dyn;
 
@@ -48,7 +50,7 @@ bool has_relro(ElfView& elf){
     for(int i = 0; i<elf.ehdr->e_phnum; ++i){
         ph = (Elf32_Phdr*)(base + i * elf.ehdr->e_phentsize);
         if (ph->p_type==PT_DYNAMIC){
-            dyn = (Elf32_Dyn*)((unsigned char*)elf.addr + ph->p_offset);
+            dyn_base = ((unsigned char*)elf.addr + ph->p_offset);
         }
     }
 
@@ -56,8 +58,21 @@ bool has_relro(ElfView& elf){
         ph = (Elf32_Phdr*)(base + i * elf.ehdr->e_phentsize);
         if (ph->p_type==PT_GNU_RELRO){
             elf.res.RELRO = "PARTIAL";
-            if ((dyn != NULL)&&(dyn->d_tag != DT_BIND_NOW)){ //FIX
-                elf.res.RELRO = "FULL";
+            if ((dyn != NULL)){ //FIX
+               int j = 0;
+               while(j*sizeof(Elf32_Dyn)+dyn_base < (unsigned char*)elf.addr+ph->p_offset+ ph->p_filesz){
+                    dyn = (Elf32_Dyn*)(dyn_base + j * sizeof(Elf32_Dyn));
+                    std::cout<<dyn->d_tag<<std::endl;
+                    if (dyn->d_tag == DT_BIND_NOW || (dyn->d_tag == DT_FLAGS_1 && 
+                        (dyn->d_un.d_val & DF_1_NOW))){ 
+                            /* For me 0X1e worked but for what i understand
+                                d_tag here is a bit mask of multiple flags, so this is a generic fix
+                            */
+                        elf.res.RELRO = "FULL";
+                        return true;
+                    }
+                    j++;
+               }
             }
         }
     }
