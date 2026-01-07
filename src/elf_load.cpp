@@ -9,13 +9,6 @@
 #include "elf_load.h"
 #include "elf_view.h"
 
-
-#define handle_error(msg) \
-    do { perror(msg); exit(EXIT_FAILURE); } while (0)
-
-#define handle_func_error(msg) \
-    do { perror(msg); return NULL; } while (0)
-
 bool load_Elf(int fd, ElfView& elf){
     struct stat sb;
 
@@ -40,4 +33,10 @@ bool load_Elf(int fd, ElfView& elf){
     }
 
     return true;
+}
+
+void unload_Elf(ElfView& elf){
+    if (munmap(elf.addr, elf.size) == -1){
+        handle_error("Exiting .. Munmap Cleanup Failed!");
+    }
 }

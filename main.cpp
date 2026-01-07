@@ -7,8 +7,6 @@
 #include "include/elf_gethdr.h"
 #include "include/elf_check.h"
 
-
-
 // namespace std
 
 void init(ElfView& elf){
@@ -20,7 +18,7 @@ void init(ElfView& elf){
     std::cout << RESET << "RELRO:\t" << elf.res.RELRO << std::endl;
     std::cout << RESET << "Canary:\t" << elf.res.Canary << std::endl;
     std::cout << RESET << "NX:\t" << elf.res.NX << std::endl;
-    std::cout << RESET << "PIE:\t" << elf.res.PIE << std::endl;
+    std::cout << RESET << "PIE:\t" << elf.res.PIE << RESET << std::endl;
     
 }
 
@@ -43,7 +41,7 @@ int main(int argc, char *argv[]){
     else exit(EXIT_FAILURE);
 
     init(elf);
-
+    unload_Elf(elf);
     exit(EXIT_SUCCESS);
 
 }

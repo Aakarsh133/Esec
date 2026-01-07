@@ -19,7 +19,9 @@ bool has_canary(ElfView& elf){
     Elf32_Sym *dynsym;
     
     for (int i = 0; i < elf.ehdr->e_shnum; ++i) { 
+
         /*Here I took the offsets of dynsym and str table*/
+
         sh = (Elf32_Shdr*)(base + i * elf.ehdr->e_shentsize);
 
         if (sh->sh_type == SHT_DYNSYM) {
@@ -37,6 +39,9 @@ bool has_canary(ElfView& elf){
         return false;
 
     for (int i = 0; i<elf.ehdr->e_shnum; ++i){
+        /*
+            The logic was REL.PLT -> .DYNSYM -> STR TABLE 
+        */
         sh = (Elf32_Shdr*)(base + i * elf.ehdr->e_shentsize);
         if ((sh->sh_type == SHT_REL)){
             unsigned char *rel_base = ((unsigned char*)elf.addr + sh->sh_offset);
