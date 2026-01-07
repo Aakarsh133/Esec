@@ -1,16 +1,74 @@
 #include <iostream>
 #include <elf.h>
+#include <cstring>
 
 #include "elf_check.h"
+
+bool has_canary(ElfView& elf){
+    unsigned char *base = ((unsigned char*)elf.addr + elf.ehdr->e_shoff), *dynsym_base=nullptr;
+    unsigned char *strtbl_base=nullptr;
+    off_t dyn_off, str_tbl;
+
+    elf.res.Canary = RED;
+    elf.res.Canary += "No Canary Found";
+
+    /*Selfnote - Cast everything to unsigned char*
+    before doing pointer arthimatic */
+
+    Elf32_Shdr *sh;
+    Elf32_Sym *dynsym;
+    
+    for (int i = 0; i < elf.ehdr->e_shnum; ++i) { 
+        /*Here I took the offsets of dynsym and str table*/
+        sh = (Elf32_Shdr*)(base + i * elf.ehdr->e_shentsize);
+
+        if (sh->sh_type == SHT_DYNSYM) {
+            dynsym_base = (unsigned char*)elf.addr + sh->sh_offset;
+            dyn_off = sh->sh_offset;
+
+            Elf32_Shdr *str_sh = (Elf32_Shdr*)(base + sh->sh_link * elf.ehdr->e_shentsize);
+            strtbl_base = (unsigned char*)elf.addr + str_sh->sh_offset;
+
+            break;
+        }
+    }
+
+    if (!dynsym_base || !strtbl_base)
+        return false;
+
+    for (int i = 0; i<elf.ehdr->e_shnum; ++i){
+        sh = (Elf32_Shdr*)(base + i * elf.ehdr->e_shentsize);
+        if ((sh->sh_type == SHT_REL)){
+            unsigned char *rel_base = ((unsigned char*)elf.addr + sh->sh_offset);
+            int j = 0;
+            Elf32_Rel *rel;
+            
+            while((j*sizeof(Elf32_Rel)+ rel_base) < (rel_base + sh->sh_size)){
+                rel = (Elf32_Rel*)(rel_base + j*sizeof(Elf32_Rel));
+                uint32_t sym_index = ELF32_R_SYM(rel->r_info);
+                dynsym = (Elf32_Sym*)(((unsigned char*)elf.addr+ dyn_off + sym_index * sizeof(Elf32_Sym)));
+
+                const char *name = (const char*)(strtbl_base + dynsym->st_name);                
+                if (!strcmp(CANARY,name)){
+                    elf.res.Canary = GREEN;
+                    elf.res.Canary += "Canary Found";
+                    return true;
+                }
+                j++;
+
+            }
+            
+        }
+    }
+    return false;
+
+}
 
 bool has_nx(ElfView& elf){
 
     unsigned char *base = ((unsigned char*)elf.addr + elf.ehdr->e_phoff); 
     elf.res.NX = GREEN;
     elf.res.NX += "NX Enabled";
-
-    /*Selfnote - Cast everything to unsigned char*
-    before doing pointer arthimatic */
 
     Elf32_Phdr *ph;
 

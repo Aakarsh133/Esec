@@ -4,3 +4,4 @@
 bool has_nx(ElfView& elf);
 bool is_pie(ElfView& elf);
 bool has_relro(ElfView& elf);
+bool has_canary(ElfView& elf);

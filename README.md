@@ -1,0 +1,1 @@
+Use  "g++ main.cpp src/elf_load.cpp  src/elf_gethdr.cpp ./src/elf_check.cpp -Iinclude -o main" or equivalent for compilation.

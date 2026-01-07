@@ -15,11 +15,13 @@ void init(ElfView& elf){
     has_nx(elf);
     is_pie(elf);
     has_relro(elf);
+    has_canary(elf);
 
     std::cout << RESET << "RELRO:\t" << elf.res.RELRO << std::endl;
+    std::cout << RESET << "Canary:\t" << elf.res.Canary << std::endl;
     std::cout << RESET << "NX:\t" << elf.res.NX << std::endl;
     std::cout << RESET << "PIE:\t" << elf.res.PIE << std::endl;
-
+    
 }
 
 int main(int argc, char *argv[]){
