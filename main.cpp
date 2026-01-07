@@ -7,7 +7,20 @@
 #include "include/elf_gethdr.h"
 #include "include/elf_check.h"
 
+
+
 // namespace std
+
+void init(ElfView& elf){
+    has_nx(elf);
+    is_pie(elf);
+    has_relro(elf);
+
+    std::cout << RESET << "RELRO:\t" << elf.res.RELRO << std::endl;
+    std::cout << RESET << "NX:\t" << elf.res.NX << std::endl;
+    std::cout << RESET << "PIE:\t" << elf.res.PIE << std::endl;
+
+}
 
 int main(int argc, char *argv[]){
 
@@ -27,16 +40,7 @@ int main(int argc, char *argv[]){
     }
     else exit(EXIT_FAILURE);
 
-    //get_Pheader(elf);
-    //std::cout << has_nx(elf) << std::endl;
-    //std::cout << is_pie(elf) << std::endl;
-    //std::cout << has_relro(elf) << std::endl;
-    has_nx(elf);
-    is_pie(elf);
-    has_relro(elf);
-    std::cout<<elf.res.NX<<std::endl;
-    std::cout<<elf.res.PIE<<std::endl;
-    std::cout<<elf.res.RELRO<<std::endl;
+    init(elf);
 
     exit(EXIT_SUCCESS);
 
