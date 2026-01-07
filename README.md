@@ -13,7 +13,7 @@ Summarisation of core logics->
 NX -> Absence of PT_GNU_STACK is considered as NX=1 in nearly all modern machines.
 Else, PT_GNU_STACK should have no execute permissions.
 
-RELRO -> Absence of PT_GNU_RELRO means RELRO.
+RELRO -> Absence of PT_GNU_RELRO means NO RELRO.
 Presence indicates atleast Partial RELRO.
 If DT_BIND_NOW exists in Dynamic Segment then GOT table is written before the control transfer to User Hence Full RELRO
 
