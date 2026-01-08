@@ -5,6 +5,9 @@
 #include "elf_check.h"
 
 bool has_canary(ElfView& elf){
+    /*Need to refer sections for this
+    Since it relies on GOT it is not patched for Statically linked binaries
+    */
     unsigned char *base = ((unsigned char*)elf.addr + elf.ehdr->e_shoff), *dynsym_base=nullptr;
     unsigned char *strtbl_base=nullptr;
     off_t dyn_off, str_tbl;
@@ -80,7 +83,8 @@ bool has_nx(ElfView& elf){
     for(int i = 0; i<elf.ehdr->e_phnum; ++i){
         ph = (Elf32_Phdr*)(base + i * elf.ehdr->e_phentsize);
         if ((ph->p_type==PT_GNU_STACK)){
-            if (!(ph->p_flags & PF_X)){
+            if (!(ph->p_flags & PF_X)){ 
+                /*p-flags will be 110 here and PF_X = 1 or 001 */
                 return true;
             }else{
                 elf.res.NX = RED;
@@ -114,7 +118,7 @@ bool has_relro(ElfView& elf){
     elf.res.RELRO += "NONE";
 
     for(int i = 0; i<elf.ehdr->e_phnum; ++i){
-        ph = (Elf32_Phdr*)(base + i * elf.ehdr->e_phentsize);
+        ph = (Elf32_Phdr*)(base + i * elf.ehdr->e_phentsize); //Dynamic Segment
         if (ph->p_type==PT_DYNAMIC){
             dyn_base = ((unsigned char*)elf.addr + ph->p_offset);
         }
